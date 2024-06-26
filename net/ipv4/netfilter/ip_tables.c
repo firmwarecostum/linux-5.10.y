@@ -1183,6 +1183,8 @@ do_replace(struct net *net, sockptr_t arg, unsigned int len)
 	void *loc_cpu_entry;
 	struct ipt_entry *iter;
 
+	if (len < sizeof(tmp))
+		return -EINVAL;
 	if (copy_from_sockptr(&tmp, arg, sizeof(tmp)) != 0)
 		return -EFAULT;
 
@@ -1190,6 +1192,8 @@ do_replace(struct net *net, sockptr_t arg, unsigned int len)
 	if (tmp.num_counters >= INT_MAX / sizeof(struct xt_counters))
 		return -ENOMEM;
 	if (tmp.num_counters == 0)
+		return -EINVAL;
+	if ((u64)len < (u64)tmp.size + sizeof(tmp))
 		return -EINVAL;
 
 	tmp.name[sizeof(tmp.name)-1] = 0;
@@ -1570,6 +1574,8 @@ compat_do_replace(struct net *net, sockptr_t arg, unsigned int len)
 	void *loc_cpu_entry;
 	struct ipt_entry *iter;
 
+	if (len < sizeof(tmp))
+		return -EINVAL;
 	if (copy_from_sockptr(&tmp, arg, sizeof(tmp)) != 0)
 		return -EFAULT;
 
@@ -1577,6 +1583,8 @@ compat_do_replace(struct net *net, sockptr_t arg, unsigned int len)
 	if (tmp.num_counters >= INT_MAX / sizeof(struct xt_counters))
 		return -ENOMEM;
 	if (tmp.num_counters == 0)
+		return -EINVAL;
+	if ((u64)len < (u64)tmp.size + sizeof(tmp))
 		return -EINVAL;
 
 	tmp.name[sizeof(tmp.name)-1] = 0;
